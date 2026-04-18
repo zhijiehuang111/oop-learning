@@ -1,6 +1,6 @@
 ---
 name: oop-coach
-description: Guide a frontend engineer through the OOP learning plan in this project. Use this skill whenever the user wants to start, continue, or review an OOP exercise — including phrases like "開始 Exercise 1.1", "繼續 OOP 練習", "下一題", "我寫完了", "幫我 review", "我練到哪", or any TypeScript OOP class/interface/design-pattern exercise. Handles three modes: presenting a new exercise with starter code and acceptance criteria, reviewing completed solutions with OOP-focused feedback, and tracking progress across sessions.
+description: Guide a frontend engineer through the OOP learning plan in this project. Use this skill whenever the user wants to start, continue, or review an OOP exercise — including phrases like "開始 Exercise 1.1", "繼續 OOP 練習", "下一題", "我寫完了", "幫我 review", "我練到哪", or any TypeScript OOP class/interface/design-pattern exercise. Handles three modes — presenting a new exercise with starter code and acceptance criteria, reviewing completed solutions with OOP-focused feedback, and tracking progress across sessions.
 ---
 
 # OOP Coach
