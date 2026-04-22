@@ -13,7 +13,7 @@ export abstract class Animal {
   //  - 思考：age 要 public、private + getter/setter，還是 protected？選一個並說明
   //    （寫在旁邊 comment 也可以）
   readonly name: string;
-  #age: number = 0;
+  private _age!: number;
 
   constructor(name: string, age: number) {
     // TODO
@@ -22,14 +22,14 @@ export abstract class Animal {
   }
 
   get age(): number {
-    return this.#age;
+    return this._age;
   }
 
   set age(newAge: number) {
     if (newAge < 0) {
       throw new Error("Age cannot be negative");
     }
-    this.#age = newAge;
+    this._age = newAge;
   }
 
   // 每種動物叫聲不同：Dog "Woof"、Cat "Meow"、Bird "Tweet"、Fish "..."
