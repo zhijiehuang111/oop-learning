@@ -11,7 +11,7 @@ const MAX_BORROW_PER_MEMBER = 3;
 export class Book {
   // TODO: id / title / author 設成 readonly public
   // TODO: isAvailable 預設 true，思考它應該由誰來修改（Library? Book 自己?）
-
+  private _isAvailable: boolean = true;
   constructor(
     readonly id: string,
     readonly title: string,
@@ -19,17 +19,36 @@ export class Book {
   ) {
     // TODO
   }
+
+  get isAvailable(): boolean {
+    return this._isAvailable;
+  }
+  set isAvailable(value: boolean) {
+    this._isAvailable = value;
+  }
 }
 
 export class Member {
   // TODO: id / name 設成 readonly public
   // TODO: borrowedBooks（提示：考慮存 Book 還是 bookId，並決定 access modifier）
-
+  private _borrowedBooks: Set<string> = new Set();
   constructor(
     readonly id: string,
     readonly name: string,
   ) {
     // TODO
+  }
+  get borrowedBooks(): Set<string> {
+    return new Set(this._borrowedBooks);
+  }
+  hasReachedLimit(): boolean {
+    return this._borrowedBooks.size >= MAX_BORROW_PER_MEMBER;
+  }
+  addBorrowed(bookId: string): void {
+    this._borrowedBooks.add(bookId);
+  }
+  removeBorrowed(bookId: string): void {
+    this._borrowedBooks.delete(bookId);
   }
 
   // TODO: 提供 Library 需要的查詢/操作 API
@@ -39,46 +58,74 @@ export class Member {
 
 export class Library {
   // TODO: books / members 用 Map<string, Book> / Map<string, Member> 比 array 好用，想想為什麼
-  private bookSet: Set<string> = new Set();
-  private memberSet: Set<string> = new Set();
-  private borrowedBooks: Map<string, string> = new Map(); // bookId -> memberId
-  private authorsBook: Map<string, Book[]> = new Map(); // author -> Book[]
-
+  private booksMap: Map<string, Book> = new Map();
+  private membersMap: Map<string, Member> = new Map();
   constructor(
     private books: Book[] = [],
     private members: Member[] = [],
   ) {
     // TODO
-    for (const book of books) {
-      this.bookSet.add(book.id);
-      if (!this.authorsBook.has(book.author))
-        this.authorsBook.set(book.author, []);
-      this.authorsBook.get(book.author)!.push(book);
-    }
-    for (const member of members) {
-      this.memberSet.add(member.id);
-    }
+    this.booksMap = new Map(this.books.map((b) => [b.id, b]));
+    this.membersMap = new Map(this.members.map((m) => [m.id, m]));
   }
 
   borrowBook(memberId: string, bookId: string): void {
     // TODO
     // 必須處理：
     //   - memberId / bookId 找不到
+    const member = this.membersMap.get(memberId);
+    const book = this.booksMap.get(bookId);
+    if (!member) {
+      throw new Error(`Member with id ${memberId} not found`);
+    }
+    if (!book) {
+      throw new Error(`Book with id ${bookId} not found`);
+    }
     //   - 書已被借走
+    if (!book.isAvailable) {
+      throw new Error(`Book with id ${bookId} is not available`);
+    }
     //   - 會員已達上限（MAX_BORROW_PER_MEMBER）
-    // 失敗時要丟 Error，且不能留下半改的狀態（atomic）
+    if (member.hasReachedLimit()) {
+      throw new Error(
+        `Member with id ${memberId} has reached the borrow limit`,
+      );
+    }
+    member.addBorrowed(bookId);
+    book.isAvailable = false;
   }
 
   returnBook(memberId: string, bookId: string): void {
     // TODO
     // 必須處理：
     //   - memberId / bookId 找不到
+    const member = this.membersMap.get(memberId);
+    const book = this.booksMap.get(bookId);
+    if (!member) {
+      throw new Error(`Member with id ${memberId} not found`);
+    }
+    if (!book) {
+      throw new Error(`Book with id ${bookId} not found`);
+    }
     //   - 該會員沒借過這本書
+    if (!member.borrowedBooks.has(bookId)) {
+      throw new Error(
+        `Member with id ${memberId} has not borrowed book with id ${bookId}`,
+      );
+    }
+    member.removeBorrowed(bookId);
+    book.isAvailable = true;
   }
 
   searchByAuthor(author: string): Book[] {
     // TODO: 回傳該作者的所有書（不論是否可借）
-    return [];
+    const result: Book[] = [];
+    for (const book of this.booksMap.values()) {
+      if (book.author === author) {
+        result.push(book);
+      }
+    }
+    return result;
   }
 }
 
