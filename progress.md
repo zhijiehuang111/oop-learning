@@ -2,7 +2,7 @@
 
 ## 進行中
 
-- [ ] 4.1 Library System
+(無)
 
 ## 已完成
 
@@ -12,5 +12,6 @@
 - [x] 2.2 Employee 薪資系統 — 收穫：多型取代分支（Payroll 無 instanceof）；`readonly` public field 就是 getter，不用再包一層 `getName()`；collection constructor 要 defensive copy（`[...arr]`）防 array aliasing 漏洞
 - [x] 3.1 Animal Kingdom — 收穫：abstract class 建模身份、interface 建模能力；type guard 用 `in` operator 篩 Swimmer；constructor 只做 super() 呼叫時可省略；getter/setter 命名走 property 慣例（`age`），validation 集中在 setter 由 constructor 復用
 - [x] 3.2 Payment Gateway — 收穫：DIP 在 Checkout 層做到了，但 interface 設計也要符合 DIP——`refund()` 該收 transactionId 而不是讓 payment method 自己記 lastTransactionId（狀態歸屬錯誤會反向限制使用情境）
+- [x] 4.1 Library System — 收穫：collaboration 與職責分配大致到位，但 Book 開 public setter 會讓 Library 的 invariant 被繞過（封裝守門人原則）；constructor 收 array 後不要再 `private` 留著，只存 Map 避免 dual storage 違反 SSoT；defensive copy 配 `ReadonlySet<string>` return type 才完整表達「唯讀視圖」
 
 ## 筆記 / 重點

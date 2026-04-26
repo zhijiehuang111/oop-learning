@@ -23,8 +23,18 @@ export class Book {
   get isAvailable(): boolean {
     return this._isAvailable;
   }
-  set isAvailable(value: boolean) {
-    this._isAvailable = value;
+
+  markBorrowed(): void {
+    if (!this._isAvailable) {
+      throw new Error(`Book with id ${this.id} is already borrowed`);
+    }
+    this._isAvailable = false;
+  }
+  markReturned(): void {
+    if (this._isAvailable) {
+      throw new Error(`Book with id ${this.id} is not borrowed`);
+    }
+    this._isAvailable = true;
   }
 }
 
@@ -38,7 +48,7 @@ export class Member {
   ) {
     // TODO
   }
-  get borrowedBooks(): Set<string> {
+  get borrowedBooks(): ReadonlySet<string> {
     return new Set(this._borrowedBooks);
   }
   hasReachedLimit(): boolean {
@@ -60,13 +70,10 @@ export class Library {
   // TODO: books / members 用 Map<string, Book> / Map<string, Member> 比 array 好用，想想為什麼
   private booksMap: Map<string, Book> = new Map();
   private membersMap: Map<string, Member> = new Map();
-  constructor(
-    private books: Book[] = [],
-    private members: Member[] = [],
-  ) {
+  constructor(books: Book[] = [], members: Member[] = []) {
     // TODO
-    this.booksMap = new Map(this.books.map((b) => [b.id, b]));
-    this.membersMap = new Map(this.members.map((m) => [m.id, m]));
+    this.booksMap = new Map(books.map((b) => [b.id, b]));
+    this.membersMap = new Map(members.map((m) => [m.id, m]));
   }
 
   borrowBook(memberId: string, bookId: string): void {
@@ -91,8 +98,8 @@ export class Library {
         `Member with id ${memberId} has reached the borrow limit`,
       );
     }
+    book.markBorrowed();
     member.addBorrowed(bookId);
-    book.isAvailable = false;
   }
 
   returnBook(memberId: string, bookId: string): void {
@@ -113,8 +120,8 @@ export class Library {
         `Member with id ${memberId} has not borrowed book with id ${bookId}`,
       );
     }
+    book.markReturned();
     member.removeBorrowed(bookId);
-    book.isAvailable = true;
   }
 
   searchByAuthor(author: string): Book[] {
