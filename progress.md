@@ -2,7 +2,7 @@
 
 ## 進行中
 
-(無)
+- [ ] 4.2 Vending Machine（State Pattern）
 
 ## 已完成
 
